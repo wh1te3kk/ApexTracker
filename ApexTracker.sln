@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApexTracker.UI", "ApexTracker.UI\ApexTracker.UI.csproj", "{CE19FB2E-77B6-42B5-B533-3225E7A383E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApexTracker.Core", "ApexTracker.Core\ApexTracker.Core.csproj", "{91E458D3-EC28-4911-8698-E218C50F924E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApexTracker.Data", "ApexTracker.Data\ApexTracker.Data.csproj", "{7E9CD172-5553-4B3E-A937-4C29040565F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApexTracker.Models", "ApexTracker.Models\ApexTracker.Models.csproj", "{91130B20-DAE0-45D9-9888-F6C60183D5BF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CE19FB2E-77B6-42B5-B533-3225E7A383E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE19FB2E-77B6-42B5-B533-3225E7A383E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE19FB2E-77B6-42B5-B533-3225E7A383E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE19FB2E-77B6-42B5-B533-3225E7A383E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91E458D3-EC28-4911-8698-E218C50F924E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91E458D3-EC28-4911-8698-E218C50F924E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91E458D3-EC28-4911-8698-E218C50F924E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91E458D3-EC28-4911-8698-E218C50F924E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E9CD172-5553-4B3E-A937-4C29040565F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E9CD172-5553-4B3E-A937-4C29040565F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E9CD172-5553-4B3E-A937-4C29040565F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E9CD172-5553-4B3E-A937-4C29040565F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91130B20-DAE0-45D9-9888-F6C60183D5BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91130B20-DAE0-45D9-9888-F6C60183D5BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91130B20-DAE0-45D9-9888-F6C60183D5BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91130B20-DAE0-45D9-9888-F6C60183D5BF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
