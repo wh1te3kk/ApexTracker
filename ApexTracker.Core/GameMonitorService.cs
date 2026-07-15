@@ -3,75 +3,210 @@ using ApexTracker.Models;
 
 namespace ApexTracker.Core;
 
-public sealed class GameMonitorService : IDisposable
+public sealed class GameMonitorService : IDisposable, IAsyncDisposable
 {
-    private readonly PeriodicTimer _timer;
-    private CancellationTokenSource? _cancellationTokenSource;
-    private GameStatus _currentStatus = GameStatus.NotRunning;
+    public const string ApexProcessName = "r5apex";
 
-    public GameMonitorService(TimeSpan? pollingInterval = null)
+    private readonly TimeSpan _pollingInterval;
+    private readonly Func<bool> _isGameRunning;
+    private readonly object _sync = new();
+    private CancellationTokenSource? _cancellationTokenSource;
+    private Task? _monitorTask;
+    private GameStatus _currentStatus = GameStatus.NotRunning;
+    private DateTimeOffset _lastCheckedAt;
+
+    public GameMonitorService(TimeSpan? pollingInterval = null, Func<bool>? isGameRunning = null)
     {
-        _timer = new PeriodicTimer(pollingInterval ?? TimeSpan.FromSeconds(2));
+        _pollingInterval = pollingInterval ?? TimeSpan.FromSeconds(2);
+
+        if (_pollingInterval <= TimeSpan.Zero)
+        {
+            throw new ArgumentOutOfRangeException(nameof(pollingInterval), "Polling interval must be greater than zero.");
+        }
+
+        _isGameRunning = isGameRunning ?? IsApexRunning;
     }
 
     public event EventHandler<GameStatus>? StatusChanged;
 
-    public GameStatus CurrentStatus => _currentStatus;
+    public event EventHandler<GameStatus>? StatusChecked;
+
+    public event EventHandler<Exception>? MonitoringError;
+
+    public TimeSpan PollingInterval => _pollingInterval;
+
+    public GameStatus CurrentStatus
+    {
+        get
+        {
+            lock (_sync)
+            {
+                return _currentStatus;
+            }
+        }
+    }
+
+    public DateTimeOffset LastCheckedAt
+    {
+        get
+        {
+            lock (_sync)
+            {
+                return _lastCheckedAt;
+            }
+        }
+    }
+
+    public bool IsMonitoring
+    {
+        get
+        {
+            lock (_sync)
+            {
+                return _monitorTask is { IsCompleted: false };
+            }
+        }
+    }
 
     public void Start()
     {
-        if (_cancellationTokenSource is not null)
+        lock (_sync)
         {
-            return;
-        }
+            if (_monitorTask is { IsCompleted: false })
+            {
+                return;
+            }
 
-        _cancellationTokenSource = new CancellationTokenSource();
-        _ = MonitorAsync(_cancellationTokenSource.Token);
+            _cancellationTokenSource = new CancellationTokenSource();
+            _monitorTask = MonitorAsync(_cancellationTokenSource);
+        }
     }
 
     public void Stop()
     {
-        _cancellationTokenSource?.Cancel();
-        _cancellationTokenSource?.Dispose();
-        _cancellationTokenSource = null;
+        lock (_sync)
+        {
+            _cancellationTokenSource?.Cancel();
+        }
+    }
+
+    public async Task StopAsync()
+    {
+        Task? monitorTask;
+
+        lock (_sync)
+        {
+            _cancellationTokenSource?.Cancel();
+            monitorTask = _monitorTask;
+        }
+
+        if (monitorTask is not null)
+        {
+            await monitorTask.ConfigureAwait(false);
+        }
+    }
+
+    public GameStatus ProbeNow()
+    {
+        GameStatus nextStatus;
+
+        try
+        {
+            nextStatus = _isGameRunning() ? GameStatus.Running : GameStatus.NotRunning;
+        }
+        catch (Exception exception)
+        {
+            RecordProbeFailure(exception);
+            return CurrentStatus;
+        }
+
+        EventHandler<GameStatus>? statusChanged = null;
+        EventHandler<GameStatus>? statusChecked;
+
+        lock (_sync)
+        {
+            _lastCheckedAt = DateTimeOffset.Now;
+            statusChecked = StatusChecked;
+
+            if (nextStatus != _currentStatus)
+            {
+                _currentStatus = nextStatus;
+                statusChanged = StatusChanged;
+            }
+        }
+
+        statusChanged?.Invoke(this, nextStatus);
+        statusChecked?.Invoke(this, nextStatus);
+        return nextStatus;
     }
 
     public void Dispose()
     {
-        Stop();
-        _timer.Dispose();
+        StopAsync().GetAwaiter().GetResult();
     }
 
-    private async Task MonitorAsync(CancellationToken cancellationToken)
+    public async ValueTask DisposeAsync()
     {
-        UpdateStatus();
+        await StopAsync();
+    }
 
+    private async Task MonitorAsync(CancellationTokenSource cancellationTokenSource)
+    {
         try
         {
-            while (await _timer.WaitForNextTickAsync(cancellationToken))
+            ProbeNow();
+
+            using var timer = new PeriodicTimer(_pollingInterval);
+            while (await timer.WaitForNextTickAsync(cancellationTokenSource.Token).ConfigureAwait(false))
             {
-                UpdateStatus();
+                ProbeNow();
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (cancellationTokenSource.IsCancellationRequested)
         {
+        }
+        finally
+        {
+            lock (_sync)
+            {
+                if (ReferenceEquals(_cancellationTokenSource, cancellationTokenSource))
+                {
+                    _monitorTask = null;
+                    _cancellationTokenSource = null;
+                }
+            }
+
+            cancellationTokenSource.Dispose();
         }
     }
 
-    private void UpdateStatus()
+    private void RecordProbeFailure(Exception exception)
     {
-        var nextStatus = IsApexRunning() ? GameStatus.Running : GameStatus.NotRunning;
-        if (nextStatus == _currentStatus)
+        EventHandler<Exception>? monitoringError;
+
+        lock (_sync)
         {
-            return;
+            _lastCheckedAt = DateTimeOffset.Now;
+            monitoringError = MonitoringError;
         }
 
-        _currentStatus = nextStatus;
-        StatusChanged?.Invoke(this, _currentStatus);
+        monitoringError?.Invoke(this, exception);
     }
 
     private static bool IsApexRunning()
     {
-        return Process.GetProcessesByName("r5apex").Length > 0;
+        var processes = Process.GetProcessesByName(ApexProcessName);
+
+        try
+        {
+            return processes.Length > 0;
+        }
+        finally
+        {
+            foreach (var process in processes)
+            {
+                process.Dispose();
+            }
+        }
     }
 }

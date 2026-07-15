@@ -2,6 +2,7 @@ namespace ApexTracker.Models;
 
 public sealed class MatchInfo
 {
+    // SQLite assigns the primary key when a completed match is saved.
     public int Id { get; set; }
 
     public DateTime StartTime { get; set; }

@@ -1,14 +1,13 @@
-﻿using System.Configuration;
-using System.Data;
 using System.Windows;
+using ApexTracker.Data;
 
-namespace ApexTracker.UI
+namespace ApexTracker.UI;
+
+public partial class App : Application
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
+    protected override async void OnStartup(StartupEventArgs e)
     {
+        await ApexTrackerDatabase.InitializeAsync();
+        base.OnStartup(e);
     }
-
 }

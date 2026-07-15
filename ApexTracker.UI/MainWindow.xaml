@@ -1,148 +1,149 @@
 <Window x:Class="ApexTracker.UI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d"
+        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
         Title="Apex Tracker"
-        Height="520"
-        Width="920"
-        MinHeight="480"
-        MinWidth="760"
+        Height="740"
+        Width="1120"
+        MinHeight="620"
+        MinWidth="900"
         Background="#111318"
         WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="Padding" Value="14,8" />
+            <Setter Property="Margin" Value="8,0,0,0" />
+            <Setter Property="Foreground" Value="#F4F7FB" />
+            <Setter Property="Background" Value="#2D6CDF" />
+            <Setter Property="BorderBrush" Value="#2D6CDF" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+        <Style TargetType="TabItem">
+            <Setter Property="Padding" Value="18,10" />
+            <Setter Property="Foreground" Value="#AEB8C6" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+        <Style x:Key="MetricCard" TargetType="Border">
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="Background" Value="#181C23" />
+            <Setter Property="BorderBrush" Value="#2B3340" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+        </Style>
+    </Window.Resources>
+
     <Grid Margin="28">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="22" />
+            <RowDefinition Height="18" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="22" />
+            <RowDefinition Height="18" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel>
-            <TextBlock Text="Apex Tracker"
-                       Foreground="#F4F7FB"
-                       FontSize="34"
-                       FontWeight="SemiBold" />
-            <TextBlock Text="个人战绩记录客户端"
-                       Margin="0,6,0,0"
-                       Foreground="#9EA7B3"
-                       FontSize="15" />
-        </StackPanel>
+        <Grid>
+            <StackPanel>
+                <TextBlock Text="Apex Tracker" Foreground="#F4F7FB" FontSize="34" FontWeight="SemiBold" />
+                <TextBlock Text="Personal match history" Margin="0,6,0,0" Foreground="#9EA7B3" FontSize="15" />
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal">
+                <Button Content="Refresh" Command="{Binding RefreshMatchesCommand}" Style="{StaticResource ActionButton}" Background="#252B35" BorderBrush="#3A4352" />
+                <Button Content="Export" Command="{Binding ExportMatchesCommand}" Style="{StaticResource ActionButton}" Background="#252B35" BorderBrush="#3A4352" />
+                <Button Content="Save test match" Command="{Binding SaveTestMatchCommand}" Style="{StaticResource ActionButton}" />
+            </StackPanel>
+        </Grid>
 
-        <Border Grid.Row="2"
-                Padding="18"
-                Background="#1B2028"
-                BorderBrush="#2B3340"
-                BorderThickness="1"
-                CornerRadius="8">
+        <Border Grid.Row="2" Padding="18" Background="#1B2028" BorderBrush="#2B3340" BorderThickness="1" CornerRadius="8">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-
                 <StackPanel>
-                    <TextBlock Text="{Binding GameStatusText}"
-                               Foreground="#F4F7FB"
-                               FontSize="22"
-                               FontWeight="SemiBold" />
-                    <TextBlock Text="{Binding GameStatusDetail}"
-                               Margin="0,6,0,0"
-                               Foreground="#9EA7B3"
-                               FontSize="14" />
+                    <TextBlock Text="{Binding GameStatusText}" Foreground="#F4F7FB" FontSize="22" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding GameStatusDetail}" Margin="0,6,0,0" Foreground="#9EA7B3" FontSize="14" />
                 </StackPanel>
-
-                <TextBlock Grid.Column="1"
-                           Text="{Binding LastUpdatedText}"
-                           VerticalAlignment="Center"
-                           Foreground="#9EA7B3"
-                           FontSize="13" />
+                <TextBlock Grid.Column="1" Text="{Binding LastUpdatedText}" VerticalAlignment="Center" Foreground="#9EA7B3" FontSize="13" />
             </Grid>
         </Border>
 
-        <Grid Grid.Row="4">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="16" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="16" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="16" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+        <TabControl Grid.Row="4" Background="Transparent" BorderThickness="0">
+            <TabItem Header="Dashboard">
+                <Grid Margin="0,18,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="18" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border Style="{StaticResource MetricCard}"><StackPanel><TextBlock Text="Total matches" Foreground="#9EA7B3" FontSize="13" /><TextBlock Text="{Binding TotalMatches}" Margin="0,12,0,0" Foreground="#F4F7FB" FontSize="30" FontWeight="SemiBold" /></StackPanel></Border>
+                        <Border Grid.Column="2" Style="{StaticResource MetricCard}"><StackPanel><TextBlock Text="Today" Foreground="#9EA7B3" FontSize="13" /><TextBlock Text="{Binding TodayMatches}" Margin="0,12,0,0" Foreground="#F4F7FB" FontSize="30" FontWeight="SemiBold" /></StackPanel></Border>
+                        <Border Grid.Column="4" Style="{StaticResource MetricCard}"><StackPanel><TextBlock Text="Avg. damage" Foreground="#9EA7B3" FontSize="13" /><TextBlock Text="{Binding AverageDamageText}" Margin="0,12,0,0" Foreground="#F4F7FB" FontSize="30" FontWeight="SemiBold" /></StackPanel></Border>
+                        <Border Grid.Column="6" Style="{StaticResource MetricCard}"><StackPanel><TextBlock Text="Avg. kills" Foreground="#9EA7B3" FontSize="13" /><TextBlock Text="{Binding AverageKillsText}" Margin="0,12,0,0" Foreground="#F4F7FB" FontSize="30" FontWeight="SemiBold" /></StackPanel></Border>
+                    </Grid>
+                    <Border Grid.Row="2" Padding="18" Background="#181C23" BorderBrush="#2B3340" BorderThickness="1" CornerRadius="8">
+                        <Grid>
+                            <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="12" /><RowDefinition Height="*" /><RowDefinition Height="12" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                            <Grid><TextBlock Text="Latest matches" Foreground="#F4F7FB" FontSize="18" FontWeight="SemiBold" /><TextBlock Text="{Binding StatusMessage}" HorizontalAlignment="Right" Foreground="#9EA7B3" FontSize="13" /></Grid>
+                            <DataGrid Grid.Row="2" ItemsSource="{Binding DashboardMatches}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" Background="#181C23" Foreground="#E5EAF1" BorderThickness="0" GridLinesVisibility="Horizontal" RowBackground="#181C23" AlternatingRowBackground="#1D222B">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Start time" Binding="{Binding StartTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" Width="*" />
+                                    <DataGridTextColumn Header="Map" Binding="{Binding Map}" Width="*" />
+                                    <DataGridTextColumn Header="Legend" Binding="{Binding Legend}" Width="*" />
+                                    <DataGridTextColumn Header="Kills" Binding="{Binding Kills}" Width="70" />
+                                    <DataGridTextColumn Header="Damage" Binding="{Binding Damage}" Width="90" />
+                                    <DataGridTextColumn Header="Rank" Binding="{Binding Rank}" Width="70" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <CheckBox Grid.Row="4" Content="Launch at sign-in" IsChecked="{Binding IsAutoStartEnabled, Mode=TwoWay}" Foreground="#AEB8C6" />
+                        </Grid>
+                    </Border>
+                </Grid>
+            </TabItem>
 
-            <Border Padding="16"
-                    Background="#181C23"
-                    BorderBrush="#2B3340"
-                    BorderThickness="1"
-                    CornerRadius="8">
-                <StackPanel>
-                    <TextBlock Text="总比赛"
-                               Foreground="#9EA7B3"
-                               FontSize="13" />
-                    <TextBlock Text="{Binding TotalMatches}"
-                               Margin="0,12,0,0"
-                               Foreground="#F4F7FB"
-                               FontSize="30"
-                               FontWeight="SemiBold" />
-                </StackPanel>
-            </Border>
+            <TabItem Header="History">
+                <Border Margin="0,18,0,0" Padding="18" Background="#181C23" BorderBrush="#2B3340" BorderThickness="1" CornerRadius="8">
+                    <Grid>
+                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="12" /><RowDefinition Height="*" /><RowDefinition Height="12" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                        <Grid><TextBlock Text="Match history" Foreground="#F4F7FB" FontSize="18" FontWeight="SemiBold" /><TextBlock Text="{Binding StatusMessage}" HorizontalAlignment="Right" Foreground="#9EA7B3" FontSize="13" /></Grid>
+                        <DataGrid Grid.Row="2" ItemsSource="{Binding RecentMatches}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True" Background="#181C23" Foreground="#E5EAF1" BorderThickness="0" GridLinesVisibility="Horizontal" RowBackground="#181C23" AlternatingRowBackground="#1D222B">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Start time" Binding="{Binding StartTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" Width="*" />
+                                <DataGridTextColumn Header="Map" Binding="{Binding Map}" Width="*" />
+                                <DataGridTextColumn Header="Legend" Binding="{Binding Legend}" Width="*" />
+                                <DataGridTextColumn Header="Kills" Binding="{Binding Kills}" Width="70" />
+                                <DataGridTextColumn Header="Assists" Binding="{Binding Assists}" Width="70" />
+                                <DataGridTextColumn Header="Damage" Binding="{Binding Damage}" Width="90" />
+                                <DataGridTextColumn Header="Rank" Binding="{Binding Rank}" Width="70" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <Grid Grid.Row="4"><TextBlock Text="{Binding HistoryPageText}" VerticalAlignment="Center" Foreground="#9EA7B3" FontSize="13" /><StackPanel HorizontalAlignment="Right" Orientation="Horizontal"><Button Content="Previous" Command="{Binding PreviousPageCommand}" Style="{StaticResource ActionButton}" Background="#252B35" BorderBrush="#3A4352" /><Button Content="Next" Command="{Binding NextPageCommand}" Style="{StaticResource ActionButton}" /></StackPanel></Grid>
+                    </Grid>
+                </Border>
+            </TabItem>
 
-            <Border Grid.Column="2"
-                    Padding="16"
-                    Background="#181C23"
-                    BorderBrush="#2B3340"
-                    BorderThickness="1"
-                    CornerRadius="8">
-                <StackPanel>
-                    <TextBlock Text="今日比赛"
-                               Foreground="#9EA7B3"
-                               FontSize="13" />
-                    <TextBlock Text="{Binding TodayMatches}"
-                               Margin="0,12,0,0"
-                               Foreground="#F4F7FB"
-                               FontSize="30"
-                               FontWeight="SemiBold" />
-                </StackPanel>
-            </Border>
-
-            <Border Grid.Column="4"
-                    Padding="16"
-                    Background="#181C23"
-                    BorderBrush="#2B3340"
-                    BorderThickness="1"
-                    CornerRadius="8">
-                <StackPanel>
-                    <TextBlock Text="平均伤害"
-                               Foreground="#9EA7B3"
-                               FontSize="13" />
-                    <TextBlock Text="{Binding AverageDamageText}"
-                               Margin="0,12,0,0"
-                               Foreground="#F4F7FB"
-                               FontSize="30"
-                               FontWeight="SemiBold" />
-                </StackPanel>
-            </Border>
-
-            <Border Grid.Column="6"
-                    Padding="16"
-                    Background="#181C23"
-                    BorderBrush="#2B3340"
-                    BorderThickness="1"
-                    CornerRadius="8">
-                <StackPanel>
-                    <TextBlock Text="K/D"
-                               Foreground="#9EA7B3"
-                               FontSize="13" />
-                    <TextBlock Text="{Binding KdText}"
-                               Margin="0,12,0,0"
-                               Foreground="#F4F7FB"
-                               FontSize="30"
-                               FontWeight="SemiBold" />
-                </StackPanel>
-            </Border>
-        </Grid>
+            <TabItem Header="Analytics">
+                <Grid Margin="0,18,0,0">
+                    <Grid.RowDefinitions><RowDefinition Height="*" /><RowDefinition Height="18" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                    <Border Padding="18" Background="#181C23" BorderBrush="#2B3340" BorderThickness="1" CornerRadius="8">
+                        <Grid><Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions><TextBlock Text="Damage trend - last 30 matches" Foreground="#F4F7FB" FontSize="18" FontWeight="SemiBold" /><lvc:CartesianChart Grid.Row="1" Series="{Binding DamageSeries}" XAxes="{Binding MatchAxis}" YAxes="{Binding DamageAxis}" LegendPosition="Hidden" /></Grid>
+                    </Border>
+                    <Border Grid.Row="2" Padding="18" Background="#181C23" BorderBrush="#2B3340" BorderThickness="1" CornerRadius="8">
+                        <Grid><Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions><TextBlock Text="Kills trend - last 30 matches" Foreground="#F4F7FB" FontSize="18" FontWeight="SemiBold" /><lvc:CartesianChart Grid.Row="1" Series="{Binding KillsSeries}" XAxes="{Binding MatchAxis}" YAxes="{Binding KillsAxis}" LegendPosition="Hidden" /></Grid>
+                    </Border>
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

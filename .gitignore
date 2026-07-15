@@ -24,3 +24,11 @@ packages/
 
 # Logs
 *.log
+
+# Local application data
+*.db
+*.db-shm
+*.db-wal
+
+# Publish and installer outputs
+artifacts/
